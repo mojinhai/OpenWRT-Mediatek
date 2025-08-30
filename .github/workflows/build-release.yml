@@ -107,6 +107,9 @@ jobs:
     - name: Compile OpenWrt
       working-directory: /builder
       id: compile
+      env: # <--- 加上这三行
+        git_name: ${{ github.actor }}
+        git_password: ${{ secrets.ACTIONS_PAT }}
       continue-on-error: true
       env:
         git_name: ${{ secrets.username }}
