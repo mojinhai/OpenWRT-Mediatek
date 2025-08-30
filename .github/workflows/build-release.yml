@@ -108,13 +108,14 @@ jobs:
       working-directory: /builder
       id: compile
       continue-on-error: true
-      env:
-        git_name: ${{ github.actor }}
-        git_password: ${{ secrets.ACTIONS_PAT }}
       run: |
+        # 核心修正：直接在这里导出脚本需要的认证信息
+        export git_name="${{ github.actor }}"
+        export git_password="${{ secrets.ACTIONS_PAT }}"
+        # 下面是原来的编译命令，保持不变
         export ${{ github.event.inputs.build_options }} LAN=${{ github.event.inputs.lan_addr }} Wifi_Name="${{ github.event.inputs.wifi_name }}" Wifi_Password="${{ github.event.inputs.wifi_password }}"  USE_GCC13=y
         [ ${{ github.event.inputs.high_power }} = 'true' ] && export High_Power=y
-        [ -n ${{ github.event.inputs.root_password }} ] && export ROOT_PASSWORD="${{ github.event.inputs.root_password }}"
+        [ -n "${{ github.event.inputs.root_password }}" ] && export ROOT_PASSWORD="${{ github.event.inputs.root_password }}"
         bash <(curl -sS http://127.0.0.1:8080/build.sh) ${{ github.event.inputs.device }}
 
     - name: Extensive logs after a failed compilation
